@@ -40,7 +40,7 @@ struct Sprite {
         texID = 0;
     }
 
-    void drawSprite(float x, float y, float angleRad = 0.0F)
+    void drawSprite(float x, float y, float angleRad = 0.0F) const
     {
         // CCW 2 triangle. top-right as first vtx.
         const Vector4 _pos[6] = {

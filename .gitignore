@@ -33,6 +33,7 @@
 
 SDL
 assimp
+json
 build
 .vs
 out
@@ -42,3 +43,4 @@ CMakeSettings.json
 *.glb
 *.gltf
 *.png
+*.json

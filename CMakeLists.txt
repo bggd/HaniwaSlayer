@@ -8,9 +8,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(SDL)
 
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+add_subdirectory(json)
+
 add_executable(HaniwaSlayer
     src/glad.c
     src/stb_image.c
     src/main.cpp)
-target_include_directories(HaniwaSlayer PUBLIC SDL/include src)
-target_link_libraries(HaniwaSlayer SDL2)
+target_include_directories(HaniwaSlayer PUBLIC SDL/include json/include)
+target_link_libraries(HaniwaSlayer SDL2 nlohmann_json::nlohmann_json)

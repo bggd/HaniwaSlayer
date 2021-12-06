@@ -2,9 +2,12 @@
 #include "game_app.hpp"
 #include "camera.hpp"
 #include "sprite.hpp"
+#include "tilemap.hpp"
 
 Camera gCam;
 Sprite gSpr;
+Sprite gTileSet[3];
+TileMap gTileMap;
 
 void initOpenGL()
 {
@@ -23,6 +26,8 @@ void onInit()
 {
     initOpenGL();
     gSpr.loadSprite("icon.png");
+    gTileSet[2].loadSprite("tile.png");
+    gTileMap.loadTileMap("first.json");
 }
 
 void onUpdate(const GameAppState& appState)
@@ -32,6 +37,7 @@ void onUpdate(const GameAppState& appState)
     glLoadMatrixf(mat4Ptr(gCam.getMVP()));
     float x = float(appState.mouseX) - 320.0F;
     float y = (float(appState.mouseY) - 240.0F) * -1.0F;
+    gTileMap.drawTileMap(gTileSet);
     gSpr.drawSprite(x, y, deg2Rad(90.0F));
 }
 
