@@ -73,7 +73,8 @@ struct Entity {
         float x = 0.0F;
         for (;;)
         {
-            if (x > amount.x)
+            float sign = (amount.x > 0.0F)? 1.0F : -1.0F;
+            if (fabs(x) > fabs(amount.x))
             {
                 Rect hurtbox = Rect(position.x + x, position.y, hitbox.w, hitbox.y);
                 for (Entity* e : entities)
@@ -90,7 +91,7 @@ struct Entity {
                         }
                     }
                 }
-                x += 1.0F;
+                x += sign;
             }
             else
             {
@@ -102,7 +103,8 @@ struct Entity {
         float y = 0.0F;
         for (;;)
         {
-            if (y > amount.y)
+            float sign = (amount.y > 0.0F)? 1.0F : -1.0F;
+            if (fabs(y) > fabs(amount.y))
             {
                 Rect hurtbox = Rect(position.x, position.y + y, hitbox.w, hitbox.y);
                 for (Entity* e : entities)
@@ -119,7 +121,7 @@ struct Entity {
                         }
                     }
                 }
-                y += 1.0F;
+                y += sign;
             }
             else
             {
@@ -143,5 +145,8 @@ struct Entity {
     virtual bool onMoveCollideY(Entity& other)
     {
         return true;
+    }
+
+    virtual void onUpdate() {
     }
 };
