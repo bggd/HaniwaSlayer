@@ -66,87 +66,61 @@ struct Entity {
     Vector3 position = vec3Zero();
     Rect hitbox;
 
-    void moveBy(Vector3 amount)
-    {
-        assert(id);
+    Rect getHitArea() {
+        return {hitbox.x + position.x, hitbox.y + position.y, hitbox.w, hitbox.h};
+    }
 
-        float x = 0.0F;
-        for (;;)
-        {
-            float sign = (amount.x > 0.0F)? 1.0F : -1.0F;
-            if (fabs(x) > fabs(amount.x))
-            {
-                Rect hurtbox = Rect(position.x + x, position.y, hitbox.w, hitbox.y);
-                for (Entity* e : entities)
-                {
-                    if (e->id == id)
-                    {
-                        continue;
-                    }
-                    if (hurtbox.isHit(e->hitbox))
-                    {
-                        if (onMoveCollideX(*e))
-                        {
-                            goto GOTO_FINISH_X;
-                        }
-                    }
+    bool moveX(float x, bool (*onCollide)(Entity* other), float step = 1.0F)
+    {
+        float total = 0.0F;
+        float sign = x > 0.0 ? 1.0F : 0.0F;
+
+        for (;;) {
+            float mx = sign * step;
+            if (fabs(total + sign * step) > fabs(x)) {
+                mx = (x - total) * sign;
+            }
+
+            for (Entity* e : Entity::entities) {
+                if (id != e->id) { continue; }
+                Rect hurtbox = Rect(hitbox.x + position.x + mx, hitbox.y + position.y, hitbox.w, hitbox.h);
+                if (hurtbox.isHit(e->getHitArea())) {
+                    onCollide(e);
+                    return true;
                 }
-                x += sign;
             }
-            else
-            {
-                break;
-            }
+
+            position.x += mx;
+            total += mx;
         }
-    GOTO_FINISH_X:
-        position.x += x;
-        float y = 0.0F;
-        for (;;)
-        {
-            float sign = (amount.y > 0.0F)? 1.0F : -1.0F;
-            if (fabs(y) > fabs(amount.y))
-            {
-                Rect hurtbox = Rect(position.x, position.y + y, hitbox.w, hitbox.y);
-                for (Entity* e : entities)
-                {
-                    if (e->id == id)
-                    {
-                        continue;
-                    }
-                    if (hurtbox.isHit(e->hitbox))
-                    {
-                        if (onMoveCollideY(*e))
-                        {
-                            goto GOTO_FINISH_Y;
-                        }
-                    }
+
+        return false;
+    }
+
+    bool moveY(float y, bool (*onCollide)(Entity* other), float step = 1.0F)
+    {
+        float total = 0.0F;
+        float sign = y > 0.0 ? 1.0F : 0.0F;
+
+        for (;;) {
+            float my = sign * step;
+            if (fabs(total + sign * step) > fabs(y)) {
+                my = (y - total) * sign;
+            }
+
+            for (Entity* e : Entity::entities) {
+                if (id != e->id) { continue; }
+                Rect hurtbox = Rect(hitbox.x + position.x, hitbox.y + position.y + my, hitbox.w, hitbox.h);
+                if (hurtbox.isHit(e->getHitArea())) {
+                    onCollide(e);
+                    return true;
                 }
-                y += sign;
             }
-            else
-            {
-                break;
-            }
+
+            position.x += my;
+            total += my;
         }
-    GOTO_FINISH_Y:
-        position.y += y;
-    }
 
-    void moveBy(float x, float y)
-    {
-        moveBy(vec3(x, y, 0.0F));
-    }
-
-    virtual bool onMoveCollideX(Entity& other)
-    {
-        return true;
-    }
-
-    virtual bool onMoveCollideY(Entity& other)
-    {
-        return true;
-    }
-
-    virtual void onUpdate() {
+        return false;
     }
 };
