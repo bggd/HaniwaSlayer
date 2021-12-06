@@ -32,7 +32,7 @@ void onUpdate(const GameAppState& appState)
     glLoadMatrixf(mat4Ptr(gCam.getMVP()));
     float x = float(appState.mouseX) - 320.0F;
     float y = (float(appState.mouseY) - 240.0F) * -1.0F;
-    gSpr.draw(x, y, deg2Rad(90.0F));
+    gSpr.drawSprite(x, y, deg2Rad(90.0F));
 }
 
 void onShutdown()

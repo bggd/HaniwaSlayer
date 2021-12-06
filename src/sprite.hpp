@@ -40,24 +40,24 @@ struct Sprite {
         texID = 0;
     }
 
-    void draw(float x, float y, float angleRad = 0.0F)
+    void drawSprite(float x, float y, float angleRad = 0.0F)
     {
-        // CCW 2 triangle
+        // CCW 2 triangle. top-right as first vtx.
         const Vector4 _pos[6] = {
             //x, y, z, w
-            0.5F, 0.5F, 0.0F, 1.0F,
-            -0.5F, 0.5F, 0.0F, 1.0F,
-            -0.5F, -0.5F, 0.0F, 1.0F,
-            -0.5F, -0.5F, 0.0F, 1.0F,
-            0.5F, -0.5F, 0.0F, 1.0F,
-            0.5F, 0.5F, 0.0F, 1.0F};
+            {0.5F, 0.5F, 0.0F, 1.0F},
+            {-0.5F, 0.5F, 0.0F, 1.0F},
+            {-0.5F, -0.5F, 0.0F, 1.0F},
+            {-0.5F, -0.5F, 0.0F, 1.0F},
+            {0.5F, -0.5F, 0.0F, 1.0F},
+            {0.5F, 0.5F, 0.0F, 1.0F}};
         const Vector3 texCoords[6] = {
-            1.0F, 1.0F, 0.0F,
-            0.0F, 1.0F, 0.0F,
-            0.0F, 0.0F, 0.0F,
-            0.0F, 0.0F, 0.0F,
-            1.0F, 0.0F, 0.0F,
-            1.0F, 1.0F, 0.0F};
+            {1.0F, 1.0F, 0.0F},
+            {0.0F, 1.0F, 0.0F},
+            {0.0F, 0.0F, 0.0F},
+            {0.0F, 0.0F, 0.0F},
+            {1.0F, 0.0F, 0.0F},
+            {1.0F, 1.0F, 0.0F}};
 
         Vector4 pos[6];
         Matrix4 S = mat4CreateScale(vec3(width, height, 0.0F));
