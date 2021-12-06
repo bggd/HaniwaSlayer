@@ -3,6 +3,7 @@
 #include "camera.hpp"
 #include "sprite.hpp"
 #include "tilemap.hpp"
+#include "entity.hpp"
 
 Camera gCam;
 Sprite gSpr;
@@ -49,6 +50,10 @@ void onShutdown()
 int main()
 {
     stbi_set_flip_vertically_on_load(1);
+    Entity e;
+    e.id = Entity::genID();
+    Entity::addEntity(&e);
+    Entity::removeEntity(&e);
     GameAppConfig appConfig;
     appConfig.width = 640;
     appConfig.height = 480;

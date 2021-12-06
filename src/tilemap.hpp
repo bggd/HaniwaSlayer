@@ -20,6 +20,7 @@ struct TileMap {
         assert(file.good());
         nlohmann::json j;
         file >> j;
+
         width = j["width"].get<uint16_t>();
         height = j["height"].get<uint16_t>();
         tileWidth = j["tilewidth"].get<uint16_t>();
