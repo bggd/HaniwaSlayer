@@ -44,15 +44,17 @@ void onUpdate(const GameAppState& appState)
     //gSpr.drawSprite(x, y, deg2Rad(90.0F));
     gSpr.drawSprite(wall.position.x, wall.position.y);
     float moveX = 0.0F;
-    if (appState.isPressedKey[kGameAppKeyD]) {
+    if (appState.isPressedKey[kGameAppKeyD])
+    {
         moveX += 1.5F;
     }
-    else if (appState.isPressedKey[kGameAppKeyA]) {
+    else if (appState.isPressedKey[kGameAppKeyA])
+    {
         moveX -= 1.5F;
     }
     player.moveX(moveX, [](Entity* other) {
         printf("%d\n", other->id);
-        other->position.x = 0.0F; return true;});
+        other->position.x = 0.0F; return true; });
     gSpr.drawSprite(player.position.x, player.position.y);
 }
 
