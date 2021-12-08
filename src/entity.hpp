@@ -19,10 +19,10 @@ struct Rect {
 
     bool isHit(const Rect& other)
     {
-        return (x + w >= other.x &&
-                x <= other.x + other.w &&
-                y + h >= other.h &&
-                y <= other.y + other.h);
+        return (x + w > other.x &&
+                y + h > other.y &&
+                x < other.x + other.w &&
+                y < other.y + other.h);
     }
 };
 
@@ -73,16 +73,17 @@ struct Entity {
     bool moveX(float x, bool (*onCollide)(Entity* other), float step = 1.0F)
     {
         float total = 0.0F;
-        float sign = x > 0.0 ? 1.0F : 0.0F;
+        float sign = x > 0.0 ? 1.0F : -1.0F;
 
-        for (;;) {
+        for (bool finished = false; !finished;) {
             float mx = sign * step;
             if (fabs(total + sign * step) > fabs(x)) {
-                mx = (x - total) * sign;
+                mx = (fabs(x) - fabs(total)) * sign;
+                finished = true;
             }
 
             for (Entity* e : Entity::entities) {
-                if (id != e->id) { continue; }
+                if (id == e->id) { continue; }
                 Rect hurtbox = Rect(hitbox.x + position.x + mx, hitbox.y + position.y, hitbox.w, hitbox.h);
                 if (hurtbox.isHit(e->getHitArea())) {
                     onCollide(e);
@@ -100,16 +101,16 @@ struct Entity {
     bool moveY(float y, bool (*onCollide)(Entity* other), float step = 1.0F)
     {
         float total = 0.0F;
-        float sign = y > 0.0 ? 1.0F : 0.0F;
+        float sign = y > 0.0 ? 1.0F : -1.0F;
 
-        for (;;) {
+        for (bool finished = false; !finished;) {
             float my = sign * step;
             if (fabs(total + sign * step) > fabs(y)) {
-                my = (y - total) * sign;
+                my = (fabs(y) - fabs(total)) * sign;
             }
 
             for (Entity* e : Entity::entities) {
-                if (id != e->id) { continue; }
+                if (id == e->id) { continue; }
                 Rect hurtbox = Rect(hitbox.x + position.x, hitbox.y + position.y + my, hitbox.w, hitbox.h);
                 if (hurtbox.isHit(e->getHitArea())) {
                     onCollide(e);
