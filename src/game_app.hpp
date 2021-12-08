@@ -22,7 +22,6 @@ enum GameAppKey {
     kNumGameAppKey
 };
 
-
 struct GameAppConfig {
     uint32_t width;
     uint32_t height;
@@ -55,8 +54,8 @@ void runGameApp(GameApp app, GameAppConfig appConfig)
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
     SDL_Window* window = SDL_CreateWindow(appConfig.title, SDL_WINDOWPOS_CENTERED,
-                                    SDL_WINDOWPOS_CENTERED, appConfig.width,
-                                    appConfig.height, SDL_WINDOW_OPENGL);
+                                          SDL_WINDOWPOS_CENTERED, appConfig.width,
+                                          appConfig.height, SDL_WINDOW_OPENGL);
     assert(window);
 
     SDL_GLContext glctx = SDL_GL_CreateContext(window);
@@ -130,10 +129,10 @@ void runGameApp(GameApp app, GameAppConfig appConfig)
             SDL_SCANCODE_UP,
             SDL_SCANCODE_DOWN,
             SDL_SCANCODE_SPACE,
-            SDL_SCANCODE_LSHIFT
-        };
+            SDL_SCANCODE_LSHIFT};
         const Uint8* keys = SDL_GetKeyboardState(NULL);
-        for (int i = 0; i < kNumGameAppKey; ++i) {
+        for (int i = 0; i < kNumGameAppKey; ++i)
+        {
             state.isPressedKey[i] = keys[skeys[i]] > 0 ? true : false;
         }
 
