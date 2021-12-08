@@ -6,6 +6,23 @@
 #include <cstdio>
 #include <cstdint>
 
+enum GameAppKey {
+    kGameAppKeyW = 0,
+    kGameAppKeyA,
+    kGameAppKeyS,
+    kGameAppKeyD,
+    kGameAppKeyX,
+    kGameAppKeyC,
+    kGameAppKeyRight,
+    kGameAppKeyLeft,
+    kGameAppKeyUp,
+    kGameAppKeyDown,
+    kGameAppKeySpace,
+    kGameAppKeyLShift,
+    kNumGameAppKey
+};
+
+
 struct GameAppConfig {
     uint32_t width;
     uint32_t height;
@@ -21,6 +38,7 @@ struct GameAppState {
     uint32_t mousePrevX = 0;
     uint32_t mousePrevY = 0;
     int32_t mouseWheelY = 0;
+    bool isPressedKey[kNumGameAppKey] = {false};
     double dt = 0.0;
 };
 
@@ -99,6 +117,25 @@ void runGameApp(GameApp app, GameAppConfig appConfig)
         state.isPressedLMB = ((buttons & SDL_BUTTON_LMASK) != 0);
         state.isPressedMMB = ((buttons & SDL_BUTTON_MMASK) != 0);
         state.isPressedRMB = ((buttons & SDL_BUTTON_RMASK) != 0);
+
+        static const Uint8 skeys[] = {
+            SDL_SCANCODE_W,
+            SDL_SCANCODE_A,
+            SDL_SCANCODE_S,
+            SDL_SCANCODE_D,
+            SDL_SCANCODE_X,
+            SDL_SCANCODE_C,
+            SDL_SCANCODE_RIGHT,
+            SDL_SCANCODE_LEFT,
+            SDL_SCANCODE_UP,
+            SDL_SCANCODE_DOWN,
+            SDL_SCANCODE_SPACE,
+            SDL_SCANCODE_LSHIFT
+        };
+        const Uint8* keys = SDL_GetKeyboardState(NULL);
+        for (int i = 0; i < kNumGameAppKey; ++i) {
+            state.isPressedKey[i] = keys[skeys[i]] > 0 ? true : false;
+        }
 
         state.dt = deltaTime;
         app.onUpdate(state);
