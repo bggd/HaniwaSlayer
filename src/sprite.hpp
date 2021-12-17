@@ -7,7 +7,10 @@
 #include <cassert>
 
 struct Sprite {
+    Sprite* parent = nullptr;
     GLuint texID = 0;
+    uint16_t srcX = 0;
+    uint16_t srcY = 0;
     uint16_t width = 0;
     uint16_t height = 0;
 
@@ -40,8 +43,31 @@ struct Sprite {
         texID = 0;
     }
 
+    void loadSubSprite(Sprite& spr, uint16_t x, uint16_t y, uint16_t w, uint16_t h)
+    {
+        assert(x < parent->width);
+        assert(y < parent->height);
+        assert(x + w < parent->width);
+        assert(y + h < parent->height);
+
+        parent = &spr;
+        srcX = x;
+        srcY = y;
+        width = w;
+        height = h;
+    }
+
     void drawSprite(float x, float y, float angleRad = 0.0F) const
     {
+        float uvX = 0.0F, uvW = 1.0F;
+        float uvY = 0.0F, uvH = 1.0F;
+        if (parent)
+        {
+            uvX = srcX / parent->width;
+            uvY = srcY / parent->height;
+            uvW = uvX + width / parent->width;
+            uvH = uvY + height / parent->height;
+        }
         // CCW 2 triangle. top-right as first vtx.
         const Vector4 _pos[6] = {
             //x, y, z, w
@@ -52,12 +78,12 @@ struct Sprite {
             {0.5F, -0.5F, 0.0F, 1.0F},
             {0.5F, 0.5F, 0.0F, 1.0F}};
         const Vector3 texCoords[6] = {
-            {1.0F, 1.0F, 0.0F},
-            {0.0F, 1.0F, 0.0F},
-            {0.0F, 0.0F, 0.0F},
-            {0.0F, 0.0F, 0.0F},
-            {1.0F, 0.0F, 0.0F},
-            {1.0F, 1.0F, 0.0F}};
+            {uvX + uvW, uvY + uvH, 0.0F},
+            {uvX, uvY + uvH, 0.0F},
+            {uvX, uvY, 0.0F},
+            {uvX, uvY, 0.0F},
+            {uvX + uvW, uvY, 0.0F},
+            {uvX + uvW, uvY + uvH, 0.0F}};
 
         Vector4 pos[6];
         Matrix4 S = mat4CreateScale(vec3(width, height, 0.0F));

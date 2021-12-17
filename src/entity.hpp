@@ -57,14 +57,14 @@ struct Entity {
         abort();
     }
 
+    uint64_t id = 0;
+    Vector3 position = vec3Zero();
+    Rect hitbox;
+
     ~Entity()
     {
         assert(id);
     }
-
-    uint64_t id = 0;
-    Vector3 position = vec3Zero();
-    Rect hitbox;
 
     Rect getHitArea() {
         return {hitbox.x + position.x, hitbox.y + position.y, hitbox.w, hitbox.h};
@@ -107,6 +107,7 @@ struct Entity {
             float my = sign * step;
             if (fabs(total + sign * step) > fabs(y)) {
                 my = (fabs(y) - fabs(total)) * sign;
+                finished = true;
             }
 
             for (Entity* e : Entity::entities) {

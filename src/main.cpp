@@ -4,13 +4,15 @@
 #include "sprite.hpp"
 #include "tilemap.hpp"
 #include "entity.hpp"
+#include "player.hpp"
 
 Camera gCam;
 Sprite gSpr;
 Sprite gTileSet[3];
 TileMap gTileMap;
 
-Entity player, wall;
+Player player;
+Entity wall;
 
 void initOpenGL()
 {
@@ -41,20 +43,10 @@ void onUpdate(const GameAppState& appState)
     float x = float(appState.mouseX) - 320.0F;
     float y = (float(appState.mouseY) - 240.0F) * -1.0F;
     gTileMap.drawTileMap(gTileSet);
-    //gSpr.drawSprite(x, y, deg2Rad(90.0F));
+    gSpr.drawSprite(x, y, deg2Rad(90.0F));
     gSpr.drawSprite(wall.position.x, wall.position.y);
-    float moveX = 0.0F;
-    if (appState.isPressedKey[kGameAppKeyD])
-    {
-        moveX += 1.5F;
-    }
-    else if (appState.isPressedKey[kGameAppKeyA])
-    {
-        moveX -= 1.5F;
-    }
-    player.moveX(moveX, [](Entity* other) {
-        printf("%d\n", other->id);
-        other->position.x = 0.0F; return true; });
+    player.updateInput(appState);
+    player.update();
     gSpr.drawSprite(player.position.x, player.position.y);
 }
 
@@ -70,7 +62,7 @@ int main()
     e.id = Entity::genID();
     Entity::addEntity(&e);
     Entity::removeEntity(&e);
-    player.id = Entity::genID();
+    player.create();
     player.hitbox.x = -32.0F;
     player.hitbox.y = -32.0F;
     player.hitbox.w = 64;
@@ -81,7 +73,6 @@ int main()
     wall.hitbox.y = -32.0F;
     wall.hitbox.w = 64;
     wall.hitbox.h = 64;
-    Entity::addEntity(&player);
     Entity::addEntity(&wall);
     GameAppConfig appConfig;
     appConfig.width = 640;
