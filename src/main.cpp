@@ -5,6 +5,7 @@
 #include "tilemap.hpp"
 #include "entity.hpp"
 #include "player.hpp"
+#include "sprite_sheet.hpp"
 
 Camera gCam;
 Sprite gSpr;
@@ -13,6 +14,10 @@ TileMap gTileMap;
 
 Player player;
 Entity wall;
+
+Sprite gAtlas;
+Sprite gSubSpr;
+SpriteSheet gSprSheet;
 
 void initOpenGL()
 {
@@ -24,7 +29,7 @@ void initOpenGL()
     //glEnable(GL_CULL_FACE);
     //glCullFace(GL_BACK);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glClearColor(1.0F, 1.0F, 1.0F, 1.0F);
+    glClearColor(0.4F, 0.4F, 0.6F, 1.0F);
 }
 
 void onInit()
@@ -33,6 +38,9 @@ void onInit()
     gSpr.loadSprite("icon.png");
     gTileSet[2].loadSprite("tile.png");
     gTileMap.loadTileMap("first.json");
+    gAtlas.loadSprite("playerRun.png");
+    gSubSpr.loadSubSprite(gAtlas, 32, 0, 32, 32);
+    gSprSheet.createSpriteSheet(gAtlas, 32, 32, 4);
 }
 
 void onUpdate(const GameAppState& appState)
@@ -42,12 +50,14 @@ void onUpdate(const GameAppState& appState)
     glLoadMatrixf(mat4Ptr(gCam.getMVP()));
     float x = float(appState.mouseX) - 320.0F;
     float y = (float(appState.mouseY) - 240.0F) * -1.0F;
-    gTileMap.drawTileMap(gTileSet);
-    gSpr.drawSprite(x, y, deg2Rad(90.0F));
-    gSpr.drawSprite(wall.position.x, wall.position.y);
-    player.updateInput(appState);
-    player.update();
-    gSpr.drawSprite(player.position.x, player.position.y);
+    //gTileMap.drawTileMap(gTileSet);
+    //gSpr.drawSprite(x, y, deg2Rad(90.0F));
+    //gSpr.drawSprite(wall.position.x, wall.position.y);
+    //player.updateInput(appState);
+    //player.update();
+    //gSpr.drawSprite(player.position.x, player.position.y);
+    gSprSheet.update();
+    gSprSheet.drawFrame(0, 0);
 }
 
 void onShutdown()

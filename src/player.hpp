@@ -2,6 +2,7 @@
 
 #include "entity.hpp"
 #include "game_app.hpp"
+#include "sprite_sheet.hpp"
 
 struct Input {
     float x = 0.0F;
@@ -48,6 +49,7 @@ Input handleInput(const GameAppState& appState, Input input)
 struct Player : Entity {
 
     Input input;
+    SpriteSheet sprSheet;
 
     void create()
     {
@@ -63,5 +65,6 @@ struct Player : Entity {
     void update()
     {
         moveX(input.x, [](Entity*) { return true; });
+        sprSheet.update();
     }
 };

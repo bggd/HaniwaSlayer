@@ -35,8 +35,10 @@ SDL
 assimp
 json
 build
+.cache
 .vs
 out
+tags
 CMakeSettings.json
 *.user
 *.fbx

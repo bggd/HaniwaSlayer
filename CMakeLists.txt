@@ -17,4 +17,6 @@ add_executable(HaniwaSlayer
     src/entity.cpp
     src/main.cpp)
 target_include_directories(HaniwaSlayer PUBLIC SDL/include json/include)
-target_link_libraries(HaniwaSlayer SDL2 nlohmann_json::nlohmann_json)
+target_link_libraries(HaniwaSlayer SDL2-static nlohmann_json::nlohmann_json)
+
+set_target_properties(HaniwaSlayer PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})

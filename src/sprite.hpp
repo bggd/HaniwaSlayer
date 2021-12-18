@@ -45,10 +45,10 @@ struct Sprite {
 
     void loadSubSprite(Sprite& spr, uint16_t x, uint16_t y, uint16_t w, uint16_t h)
     {
-        assert(x < parent->width);
-        assert(y < parent->height);
-        assert(x + w < parent->width);
-        assert(y + h < parent->height);
+        assert(x < spr.width);
+        assert(y < spr.height);
+        assert(x + w <= spr.width);
+        assert(y + h <= spr.height);
 
         parent = &spr;
         srcX = x;
@@ -63,10 +63,10 @@ struct Sprite {
         float uvY = 0.0F, uvH = 1.0F;
         if (parent)
         {
-            uvX = srcX / parent->width;
-            uvY = srcY / parent->height;
-            uvW = uvX + width / parent->width;
-            uvH = uvY + height / parent->height;
+            uvX = float(srcX) / float(parent->width);
+            uvY = float(srcY) / float(parent->height);
+            uvW = (uvX + float(width)) / float(parent->width);
+            uvH = (uvY + float(height)) / float(parent->height);
         }
         // CCW 2 triangle. top-right as first vtx.
         const Vector4 _pos[6] = {
@@ -95,7 +95,7 @@ struct Sprite {
             pos[i] = vec4Transform(_pos[i], xform);
         }
 
-        glBindTexture(GL_TEXTURE_2D, texID);
+        glBindTexture(GL_TEXTURE_2D, parent ? parent->texID : texID);
         glBegin(GL_TRIANGLES);
         for (int i = 0; i < 6; ++i)
         {

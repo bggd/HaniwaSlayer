@@ -61,10 +61,10 @@ struct TileMap {
         float offsetY = height * tileHeight / 2.0F;
         for (uint16_t ty = 0; ty < height; ++ty)
         {
-            y = ty * tileHeight;
+            y = float(ty) * tileHeight;
             for (uint16_t tx = 0; tx < width; ++tx)
             {
-                x = tx * tileWidth;
+                x = float(tx) * tileWidth;
                 uint8_t idx = tileLayer[width * ty + tx];
                 if (idx > 0)
                 {
