@@ -1,0 +1,7 @@
+---
+Checks:          '*,-modernize-use-trailing-return-type,-llvmlibc-*,-cppcoreguidelines-avoid-magic-numbers,-readability-magic-numbers,-misc-non-private-member-variables-in-classes,-cppcoreguidelines-owning-memory,-clang-diagnostic-missing-prototypes,-altera-struct-pack-align,-misc-definitions-in-headers,-cppcoreguidelines-pro-type-cstyle-cast,-google-readability-casting,-clang-diagnostic-old-style-cast,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-pro-bounds-constant-array-index,-hicpp-use-auto,-modernize-use-auto,-*-avoid-c-arrays,-fuchsia-default-arguments-calls,-hicpp-named-parameter,-readability-named-parameter,-readability-isolate-declaration,-cppcoreguidelines-pro-type-vararg,-hicpp-vararg'
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*'
+AnalyzeTemporaryDtors: false
+FormatStyle:     none
+...
