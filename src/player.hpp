@@ -46,14 +46,31 @@ Input handleInput(const GameAppState& appState, Input input)
     return input;
 }
 
+enum PlayerSpriteSheet {
+    kPlayerSpriteSheetRun = 0,
+    kNumPlayerSpriteSheet
+};
+
 struct Player : Entity {
 
     Input input;
-    SpriteSheet sprSheet;
+    PlayerSpriteSheet currentSpriteSheet = kPlayerSpriteSheetRun;
+    Sprite sprites[kNumPlayerSpriteSheet];
+    SpriteSheet sprSheets[kNumPlayerSpriteSheet];
+
+    void onPreload() override
+    {
+        if (!sprites[0].isLoaded())
+        {
+            sprites[0].loadSprite("playerRun.png");
+            sprSheets[0].createSpriteSheet(sprites[0], 32, 32, 4);
+        }
+    }
 
     void create()
     {
         id = Entity::genID();
+        printf("player id: %d\n", id);
         addEntity(this);
     }
 
@@ -65,6 +82,8 @@ struct Player : Entity {
     void update()
     {
         moveX(input.x, [](Entity*) { return true; });
-        sprSheet.update();
+        moveY(-1.0F, [](Entity*) { return true; });
+        sprSheets[currentSpriteSheet].update();
+        sprSheets[currentSpriteSheet].drawFrame(position.x, position.y);
     }
 };

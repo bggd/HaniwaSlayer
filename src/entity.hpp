@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gmath.hpp"
+#include "glad.h"
 #include <vector>
 #include <cassert>
 
@@ -66,7 +67,10 @@ struct Entity {
         assert(id);
     }
 
-    Rect getHitArea() {
+    virtual void onPreload() {}
+
+    Rect getHitArea()
+    {
         return {hitbox.x + position.x, hitbox.y + position.y, hitbox.w, hitbox.h};
     }
 
@@ -75,17 +79,24 @@ struct Entity {
         float total = 0.0F;
         float sign = x > 0.0 ? 1.0F : -1.0F;
 
-        for (bool finished = false; !finished;) {
+        for (bool finished = false; !finished;)
+        {
             float mx = sign * step;
-            if (fabs(total + sign * step) > fabs(x)) {
+            if (fabs(total + sign * step) > fabs(x))
+            {
                 mx = (fabs(x) - fabs(total)) * sign;
                 finished = true;
             }
 
-            for (Entity* e : Entity::entities) {
-                if (id == e->id) { continue; }
+            for (Entity* e : Entity::entities)
+            {
+                if (id == e->id)
+                {
+                    continue;
+                }
                 Rect hurtbox = Rect(hitbox.x + position.x + mx, hitbox.y + position.y, hitbox.w, hitbox.h);
-                if (hurtbox.isHit(e->getHitArea())) {
+                if (hurtbox.isHit(e->getHitArea()))
+                {
                     onCollide(e);
                     return true;
                 }
@@ -103,26 +114,55 @@ struct Entity {
         float total = 0.0F;
         float sign = y > 0.0 ? 1.0F : -1.0F;
 
-        for (bool finished = false; !finished;) {
+        for (bool finished = false; !finished;)
+        {
             float my = sign * step;
-            if (fabs(total + sign * step) > fabs(y)) {
+            if (fabs(total + sign * step) > fabs(y))
+            {
                 my = (fabs(y) - fabs(total)) * sign;
                 finished = true;
             }
 
-            for (Entity* e : Entity::entities) {
-                if (id == e->id) { continue; }
+            for (Entity* e : Entity::entities)
+            {
+                if (id == e->id)
+                {
+                    continue;
+                }
                 Rect hurtbox = Rect(hitbox.x + position.x, hitbox.y + position.y + my, hitbox.w, hitbox.h);
-                if (hurtbox.isHit(e->getHitArea())) {
+                if (hurtbox.isHit(e->getHitArea()))
+                {
                     onCollide(e);
                     return true;
                 }
             }
 
-            position.x += my;
+            position.y += my;
             total += my;
         }
 
         return false;
     }
 };
+
+inline void drawHitbox(const Entity& e, float r = 1.0F, float g = 1.0F, float b = 1.0F, float a = 1.0F)
+{
+    float x = e.position.x + e.hitbox.x;
+    float y = e.position.y + e.hitbox.y;
+    float w = e.hitbox.w;
+    float h = e.hitbox.h;
+    glBegin(GL_LINES);
+    glColor4f(r, g, b, a);
+    glVertex3f(x, y, 0.0F);
+    glVertex3f(x + w, y, 0.0F);
+    glVertex3f(x + w, y, 0.0F);
+    glVertex3f(x + w, y + h, 0.0F);
+    glVertex3f(x + w, y + h, 0.0F);
+    glVertex3f(x, y + h, 0.0F);
+    glVertex3f(x, y + h, 0.0F);
+    glVertex3f(x, y, 0.0F);
+    glEnd();
+    glBegin(GL_LINES);
+    glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+    glEnd();
+}

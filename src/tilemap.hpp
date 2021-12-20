@@ -1,9 +1,11 @@
 #pragma once
 
 #include "sprite.hpp"
+#include "entity.hpp"
 #include <nlohmann/json.hpp>
 #include <cstdint>
 #include <fstream>
+#include <vector>
 
 struct TileMap {
     uint8_t* tileLayer = nullptr;
@@ -11,6 +13,7 @@ struct TileMap {
     uint16_t height = 0;
     uint16_t tileWidth = 0;
     uint16_t tileHeight = 0;
+    std::vector<Entity> walls;
 
     void loadTileMap(const char* fileName)
     {
@@ -51,6 +54,39 @@ struct TileMap {
         assert(x < width);
         assert(y < height);
         return tileLayer[width * y + x];
+    }
+
+    void createWallEntities()
+    {
+        float x = 0.0F;
+        float y = 0.0F;
+        float offsetX = width * tileWidth / 2.0F;
+        float offsetY = height * tileHeight / 2.0F;
+        for (uint16_t ty = 0; ty < height; ++ty)
+        {
+            y = float(ty) * tileHeight;
+            for (uint16_t tx = 0; tx < width; ++tx)
+            {
+                x = float(tx) * tileWidth;
+                uint8_t idx = tileLayer[width * ty + tx];
+                if (idx > 0)
+                {
+                    Entity e;
+                    e.id = Entity::genID();
+                    e.position.x = x - offsetX;
+                    e.position.y = (y - offsetY) * -1.0F;
+                    e.hitbox.x = -4.0F;
+                    e.hitbox.y = -4.0F;
+                    e.hitbox.w = 8.0F;
+                    e.hitbox.h = 8.0F;
+                    walls.push_back(e);
+                }
+            }
+        }
+        for (Entity& e : walls)
+        {
+            Entity::addEntity(&e);
+        }
     }
 
     void drawTileMap(const Sprite* tilesets)

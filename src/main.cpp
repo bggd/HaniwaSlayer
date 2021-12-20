@@ -13,7 +13,6 @@ Sprite gTileSet[3];
 TileMap gTileMap;
 
 Player player;
-Entity wall;
 
 Sprite gAtlas;
 Sprite gSubSpr;
@@ -38,9 +37,11 @@ void onInit()
     gSpr.loadSprite("icon.png");
     gTileSet[2].loadSprite("tile.png");
     gTileMap.loadTileMap("first.json");
+    gTileMap.createWallEntities();
     gAtlas.loadSprite("playerRun.png");
     gSubSpr.loadSubSprite(gAtlas, 32, 0, 32, 32);
     gSprSheet.createSpriteSheet(gAtlas, 32, 32, 4);
+    player.onPreload();
 }
 
 void onUpdate(const GameAppState& appState)
@@ -50,14 +51,18 @@ void onUpdate(const GameAppState& appState)
     glLoadMatrixf(mat4Ptr(gCam.getMVP()));
     float x = float(appState.mouseX) - 320.0F;
     float y = (float(appState.mouseY) - 240.0F) * -1.0F;
-    //gTileMap.drawTileMap(gTileSet);
+    gTileMap.drawTileMap(gTileSet);
     //gSpr.drawSprite(x, y, deg2Rad(90.0F));
     //gSpr.drawSprite(wall.position.x, wall.position.y);
-    //player.updateInput(appState);
-    //player.update();
+    player.updateInput(appState);
+    player.update();
     //gSpr.drawSprite(player.position.x, player.position.y);
-    gSprSheet.update();
-    gSprSheet.drawFrame(0, 0);
+    //gSprSheet.update();
+    //gSprSheet.drawFrame(0, 0);
+    for (auto& e : gTileMap.walls) {
+        drawHitbox(e, 1.0F, 0.0F, 0.0F);
+    }
+    drawHitbox(player, 0.0F, 1.0F, 0.0F);
 }
 
 void onShutdown()
@@ -68,22 +73,14 @@ void onShutdown()
 int main()
 {
     stbi_set_flip_vertically_on_load(1);
-    Entity e;
-    e.id = Entity::genID();
-    Entity::addEntity(&e);
-    Entity::removeEntity(&e);
+
     player.create();
-    player.hitbox.x = -32.0F;
-    player.hitbox.y = -32.0F;
-    player.hitbox.w = 64;
-    player.hitbox.h = 64;
-    wall.id = Entity::genID();
-    wall.position.x = 200.0F;
-    wall.hitbox.x = -32.0F;
-    wall.hitbox.y = -32.0F;
-    wall.hitbox.w = 64;
-    wall.hitbox.h = 64;
-    Entity::addEntity(&wall);
+    player.hitbox.x = -5.0F;
+    player.hitbox.y = -5.0F;
+    player.hitbox.w = 10.0F;
+    player.hitbox.h = 9.0F;
+
+
     GameAppConfig appConfig;
     appConfig.width = 640;
     appConfig.height = 480;

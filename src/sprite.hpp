@@ -14,6 +14,10 @@ struct Sprite {
     uint16_t width = 0;
     uint16_t height = 0;
 
+    bool isLoaded() {
+        return texID > 0;
+    }
+
     void loadSprite(const char* fileName)
     {
         assert(texID == 0);
