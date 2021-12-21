@@ -59,10 +59,11 @@ void onUpdate(const GameAppState& appState)
     //gSpr.drawSprite(player.position.x, player.position.y);
     //gSprSheet.update();
     //gSprSheet.drawFrame(0, 0);
-    for (auto& e : gTileMap.walls) {
-        drawHitbox(e, 1.0F, 0.0F, 0.0F);
+    for (auto& e : gTileMap.walls)
+    {
+        drawHitbox(e, 1.0F, 0.0F, 0.0F, 0.5F);
     }
-    drawHitbox(player, 0.0F, 1.0F, 0.0F);
+    drawHitbox(player, 0.0F, 1.0F, 0.0F, 0.5F);
 }
 
 void onShutdown()
@@ -75,11 +76,10 @@ int main()
     stbi_set_flip_vertically_on_load(1);
 
     player.create();
-    player.hitbox.x = -5.0F;
-    player.hitbox.y = -5.0F;
-    player.hitbox.w = 10.0F;
+    player.hitbox.x = -3.0F;
+    player.hitbox.y = -4.0F;
+    player.hitbox.w = 6.0F;
     player.hitbox.h = 9.0F;
-
 
     GameAppConfig appConfig;
     appConfig.width = 640;

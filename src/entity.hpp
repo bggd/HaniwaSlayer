@@ -4,6 +4,7 @@
 #include "glad.h"
 #include <vector>
 #include <cassert>
+#include <cmath>
 
 struct Rect {
     float x, y, w, h;
@@ -147,10 +148,10 @@ struct Entity {
 
 inline void drawHitbox(const Entity& e, float r = 1.0F, float g = 1.0F, float b = 1.0F, float a = 1.0F)
 {
-    float x = e.position.x + e.hitbox.x;
-    float y = e.position.y + e.hitbox.y;
-    float w = e.hitbox.w;
-    float h = e.hitbox.h;
+    float x = floorf(e.position.x) + floorf(e.hitbox.x) + 0.5F;
+    float y = floorf(e.position.y) + floorf(e.hitbox.y) + 0.5F;
+    float w = floorf(e.hitbox.w) - 1.0F;
+    float h = floorf(e.hitbox.h) - 1.0F;
     glBegin(GL_LINES);
     glColor4f(r, g, b, a);
     glVertex3f(x, y, 0.0F);
