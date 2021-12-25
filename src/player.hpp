@@ -3,11 +3,15 @@
 #include "entity.hpp"
 #include "game_app.hpp"
 #include "sprite_sheet.hpp"
+#include "helper.hpp"
+#include <functional>
 
 struct Input {
     float x = 0.0F;
     float prevX = 0.0F;
     bool turnedX = false;
+    bool jumpBtn = false;
+    bool jumpBtnP = false;
 };
 
 Input handleInput(const GameAppState& appState, Input input)
@@ -43,6 +47,24 @@ Input handleInput(const GameAppState& appState, Input input)
         input.turnedX = false;
     }
     input.prevX = input.x;
+
+    if (input.jumpBtn == false && appState.isPressedKey[kGameAppKeySpace])
+    {
+        input.jumpBtnP = true;
+    }
+    else
+    {
+        input.jumpBtnP = false;
+    }
+
+    if (appState.isPressedKey[kGameAppKeySpace])
+    {
+        input.jumpBtn = true;
+    }
+    else
+    {
+        input.jumpBtn = false;
+    }
     return input;
 }
 
@@ -53,6 +75,10 @@ enum PlayerSpriteSheet {
 
 struct Player : Entity {
 
+    float hsp = 0.0F;
+    float vsp = 0.0F;
+    float grv = -0.3F;
+    float walksp = 4.0F;
     Input input;
     PlayerSpriteSheet currentSpriteSheet = kPlayerSpriteSheetRun;
     Sprite sprites[kNumPlayerSpriteSheet];
@@ -70,7 +96,6 @@ struct Player : Entity {
     void create()
     {
         id = Entity::genID();
-        printf("player id: %d\n", id);
         addEntity(this);
     }
 
@@ -81,9 +106,42 @@ struct Player : Entity {
 
     void update()
     {
-        moveX(input.x, [](Entity*) { return true; });
-        moveY(-1.0F, [](Entity*) { return true; });
+        hsp = input.x * walksp;
+        moveX(hsp, [this](Entity*) {
+            hsp = 0.0F;
+            return true;
+        });
+
+        vsp = vsp + grv;
+
+        if (onGround() && input.jumpBtnP)
+        {
+            vsp += 4.0F;
+        }
+
+        moveY(vsp, [this](Entity*) {
+            vsp = 0.0F;
+            return true;
+        });
+
         sprSheets[currentSpriteSheet].update();
-        sprSheets[currentSpriteSheet].drawFrame(position.x, position.y);
+        sprSheets[currentSpriteSheet].drawFrame(floorf(position.x), floorf(position.y));
+    }
+
+    bool onGround()
+    {
+        for (Entity* e : Entity::entities)
+        {
+            if (id == e->id)
+            {
+                continue;
+            }
+            Rect hurtbox = Rect(hitbox.x + position.x, hitbox.y + position.y + -1.0F, hitbox.w, hitbox.h);
+            if (hurtbox.isHit(e->getHitArea()))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 };

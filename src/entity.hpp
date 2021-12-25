@@ -3,6 +3,7 @@
 #include "gmath.hpp"
 #include "glad.h"
 #include <vector>
+#include <functional>
 #include <cassert>
 #include <cmath>
 
@@ -75,7 +76,7 @@ struct Entity {
         return {hitbox.x + position.x, hitbox.y + position.y, hitbox.w, hitbox.h};
     }
 
-    bool moveX(float x, bool (*onCollide)(Entity* other), float step = 1.0F)
+    bool moveX(float x, std::function<bool(Entity*)> onCollide = [](Entity*) { return true; }, float step = 1.0F)
     {
         float total = 0.0F;
         float sign = x > 0.0 ? 1.0F : -1.0F;
@@ -96,9 +97,8 @@ struct Entity {
                     continue;
                 }
                 Rect hurtbox = Rect(hitbox.x + position.x + mx, hitbox.y + position.y, hitbox.w, hitbox.h);
-                if (hurtbox.isHit(e->getHitArea()))
+                if (hurtbox.isHit(e->getHitArea()) && onCollide(e))
                 {
-                    onCollide(e);
                     return true;
                 }
             }
@@ -110,7 +110,7 @@ struct Entity {
         return false;
     }
 
-    bool moveY(float y, bool (*onCollide)(Entity* other), float step = 1.0F)
+    bool moveY(float y, std::function<bool(Entity*)> onCollide = [](Entity*) { return true; }, float step = 1.0F)
     {
         float total = 0.0F;
         float sign = y > 0.0 ? 1.0F : -1.0F;
@@ -131,9 +131,8 @@ struct Entity {
                     continue;
                 }
                 Rect hurtbox = Rect(hitbox.x + position.x, hitbox.y + position.y + my, hitbox.w, hitbox.h);
-                if (hurtbox.isHit(e->getHitArea()))
+                if (hurtbox.isHit(e->getHitArea()) && onCollide(e))
                 {
-                    onCollide(e);
                     return true;
                 }
             }
