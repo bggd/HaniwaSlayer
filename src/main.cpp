@@ -6,6 +6,7 @@
 #include "entity.hpp"
 #include "player.hpp"
 #include "sprite_sheet.hpp"
+#include "framebuffer.hpp"
 
 Camera gCam;
 Sprite gSpr;
@@ -18,6 +19,8 @@ Sprite gAtlas;
 Sprite gSubSpr;
 SpriteSheet gSprSheet;
 
+FrameBuffer gFBO[2];
+
 void initOpenGL()
 {
     glEnable(GL_BLEND);
@@ -29,6 +32,9 @@ void initOpenGL()
     //glCullFace(GL_BACK);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glClearColor(0.4F, 0.4F, 0.6F, 1.0F);
+
+    gFBO[0].createFrameBuffer(160, 120);
+    gFBO[1].createFrameBuffer(640, 480);
 }
 
 void onInit()
@@ -46,9 +52,15 @@ void onInit()
 
 void onUpdate(const GameAppState& appState)
 {
-    glViewport(0, 0, 640, 480);
+
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, gFBO[0].fbo);
+    glViewport(0, 0, 160, 120);
     glClear(GL_COLOR_BUFFER_BIT);
-    glLoadMatrixf(mat4Ptr(gCam.getMVP()));
+    Camera cam = gCam;
+    cam.position.x -= 4.0F;
+    cam.position.y += 4.0F;
+    cam.setProjection(mat4CreateOrthographicOffCenter(-160.0F / 2.0F, 160.0F / 2.0F, -120.0F / 2.0F, 120.0F / 2.0F, 0.05F, 100.0F));
+    glLoadMatrixf(mat4Ptr(cam.getMVP()));
     float x = float(appState.mouseX) - 320.0F;
     float y = (float(appState.mouseY) - 240.0F) * -1.0F;
     gTileMap.drawTileMap(gTileSet);
@@ -64,10 +76,36 @@ void onUpdate(const GameAppState& appState)
         drawHitbox(e, 1.0F, 0.0F, 0.0F, 0.5F);
     }
     drawHitbox(player, 0.0F, 1.0F, 0.0F, 0.5F);
+
+    glViewport(0, 0, 160 * 3, 120 * 3);
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+    glClear(GL_COLOR_BUFFER_BIT);
+    //gCam.setProjection(mat4CreateOrthographicOffCenter(-1.0F, 1.0F, -1.0F, 1.0F, 0.05F, 100.0F));
+    //glLoadMatrixf(mat4Ptr(gCam.getMVP()));
+    glLoadIdentity();
+    glBindTexture(GL_TEXTURE_2D, gFBO[0].tex);
+    glBegin(GL_TRIANGLES);
+    glTexCoord2f(1.0F, 1.0F);
+    glVertex3f(1.0F, 1.0F, 0.0F);
+    glTexCoord2f(0.0F, 1.0F);
+    glVertex3f(-1.0F, 1.0F, 0.0F);
+    glTexCoord2f(0.0F, 0.0F);
+    glVertex3f(-1.0F, -1.0F, 0.0F);
+
+    glTexCoord2f(0.0F, 0.0F);
+    glVertex3f(-1.0F, -1.0F, 0.0F);
+    glTexCoord2f(1.0F, 0.0F);
+    glVertex3f(1.0F, -1.0F, 0.0F);
+    glTexCoord2f(1.0F, 1.0F);
+    glVertex3f(1.0F, 1.0F, 0.0F);
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void onShutdown()
 {
+    gFBO[0].destroyFrameBuffer();
+    gFBO[1].destroyFrameBuffer();
     gSpr.unloadSprite();
 }
 
@@ -82,8 +120,8 @@ int main()
     player.hitbox.h = 9.0F;
 
     GameAppConfig appConfig;
-    appConfig.width = 640;
-    appConfig.height = 480;
+    appConfig.width = 160 * 3;
+    appConfig.height = 120 * 3;
     appConfig.title = "Haniwa Slayer";
     GameApp app = {};
     app.onInit = onInit;

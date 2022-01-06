@@ -28,7 +28,7 @@ struct TileMap {
         height = j["height"].get<uint16_t>();
         tileWidth = j["tilewidth"].get<uint16_t>();
         tileHeight = j["tileheight"].get<uint16_t>();
-        printf("loadTileMap: %s, width: %d, height: %d\n", fileName, width, height);
+        printf("loadTileMap: %s, width: %d, height: %d, tileWidth: %d, tileHeight: %d\n", fileName, width, height, tileWidth, tileHeight);
         tileLayer = new uint8_t[width * height];
         assert(tileLayer);
         for (int i = 0; i < width * height; ++i)
