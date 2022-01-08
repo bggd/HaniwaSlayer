@@ -69,7 +69,8 @@ Input handleInput(const GameAppState& appState, Input input)
 }
 
 enum PlayerSpriteSheet {
-    kPlayerSpriteSheetRun = 0,
+    kPlayerSpriteSheetIdle = 0,
+    kPlayerSpriteSheetRun,
     kNumPlayerSpriteSheet
 };
 
@@ -77,8 +78,9 @@ struct Player : Entity {
 
     float hsp = 0.0F;
     float vsp = 0.0F;
-    float grv = -0.3F;
-    float walksp = 4.0F;
+    float grv = -0.25F;
+    float walksp = 1.25F;
+    float direction = 1.0F;
     Input input;
     PlayerSpriteSheet currentSpriteSheet = kPlayerSpriteSheetRun;
     Sprite sprites[kNumPlayerSpriteSheet];
@@ -86,10 +88,15 @@ struct Player : Entity {
 
     void onPreload() override
     {
-        if (!sprites[0].isLoaded())
+        if (!sprites[kPlayerSpriteSheetIdle].isLoaded())
         {
-            sprites[0].loadSprite("playerRun.png");
-            sprSheets[0].createSpriteSheet(sprites[0], 32, 32, 4);
+            sprites[kPlayerSpriteSheetIdle].loadSprite("playerIdle.png");
+            sprSheets[kPlayerSpriteSheetIdle].createSpriteSheet(sprites[kPlayerSpriteSheetIdle], 32, 32, 1);
+        }
+        if (!sprites[kPlayerSpriteSheetRun].isLoaded())
+        {
+            sprites[kPlayerSpriteSheetRun].loadSprite("playerRun.png");
+            sprSheets[kPlayerSpriteSheetRun].createSpriteSheet(sprites[kPlayerSpriteSheetRun], 32, 32, 4);
         }
     }
 
@@ -124,8 +131,23 @@ struct Player : Entity {
             return true;
         });
 
+        if (!floatEqual(input.x, 0.0F))
+        {
+            if (!floatEqual(input.prevX, input.x))
+            {
+                sprSheets[currentSpriteSheet].reset();
+            }
+            direction = input.x;
+            currentSpriteSheet = kPlayerSpriteSheetRun;
+        }
+        else
+        {
+            sprSheets[currentSpriteSheet].reset();
+            currentSpriteSheet = kPlayerSpriteSheetIdle;
+        }
+
         sprSheets[currentSpriteSheet].update();
-        sprSheets[currentSpriteSheet].drawFrame(floorf(position.x), floorf(position.y));
+        sprSheets[currentSpriteSheet].drawFrame(floorf(position.x), floorf(position.y), 0.0F, direction < 0.0F);
     }
 
     bool onGround()

@@ -27,6 +27,12 @@ struct SpriteSheet {
         this->frameRate = frameRate;
     }
 
+    void reset()
+    {
+        _i = 0;
+        frameIndex = 0;
+    }
+
     void update()
     {
         _i++;
@@ -41,7 +47,7 @@ struct SpriteSheet {
         }
     }
 
-    void drawFrame(float dx, float dy)
+    void drawFrame(float dx, float dy, float radAngle = 0.0F, bool flipX = false, bool flipY = false)
     {
         assert(frameIndex < frameMax);
 
@@ -51,6 +57,6 @@ struct SpriteSheet {
         float sy = frameHeight * float(y);
         Sprite spr;
         spr.loadSubSprite(*source, sx, sy, frameWidth, frameHeight);
-        spr.drawSprite(dx, dy);
+        spr.drawSprite(dx, dy, radAngle, flipX, flipY);
     }
 };

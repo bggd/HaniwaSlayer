@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <cfloat>
 
 struct Vector3 {
     float x, y, z;
@@ -25,6 +26,11 @@ inline float deg2Rad(float degree)
 {
     float radian = degree * (3.14159265358979323846F / 180.0F);
     return radian;
+}
+
+inline bool floatEqual(float a, float b)
+{
+    return fabsf(a - b) <= FLT_EPSILON * fmaxf(1.0F, fmaxf(fabsf(a), fabsf(b)));
 }
 
 inline Vector3 vec3Zero()

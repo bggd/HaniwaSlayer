@@ -75,7 +75,7 @@ void onUpdate(const GameAppState& appState)
     {
         drawHitbox(e, 1.0F, 0.0F, 0.0F, 0.5F);
     }
-    drawHitbox(player, 0.0F, 1.0F, 0.0F, 0.5F);
+    //drawHitbox(player, 0.0F, 1.0F, 0.0F, 0.5F);
 
     glViewport(0, 0, 160 * 3, 120 * 3);
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);

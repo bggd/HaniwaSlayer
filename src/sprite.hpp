@@ -14,7 +14,8 @@ struct Sprite {
     uint16_t width = 0;
     uint16_t height = 0;
 
-    bool isLoaded() {
+    bool isLoaded()
+    {
         return texID > 0;
     }
 
@@ -61,7 +62,7 @@ struct Sprite {
         height = h;
     }
 
-    void drawSprite(float x, float y, float angleRad = 0.0F) const
+    void drawSprite(float x, float y, float angleRad = 0.0F, bool flipX = false, bool flipY = false) const
     {
         float uvX = 0.0F, uvW = 1.0F;
         float uvY = 0.0F, uvH = 1.0F;
@@ -90,7 +91,7 @@ struct Sprite {
             {uvX + uvW, uvY + uvH, 0.0F}};
 
         Vector4 pos[6];
-        Matrix4 S = mat4CreateScale(vec3(width, height, 0.0F));
+        Matrix4 S = mat4CreateScale(vec3(flipX ? -width : width, flipY ? -height : height, 0.0F));
         Matrix4 R = mat4CreateFromAxisAngle(vec3(0.0F, 0.0F, 1.0F), angleRad);
         Matrix4 T = mat4CreateTranslation(vec3(x, y, 0.0F));
         Matrix4 xform = mat4Multiply(mat4Multiply(S, R), T);
