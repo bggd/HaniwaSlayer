@@ -11,7 +11,9 @@ struct Input {
     float prevX = 0.0F;
     bool turnedX = false;
     bool jumpBtn = false;
-    bool jumpBtnP = false;
+    bool prevJumpBtn = false;
+    bool jumpBtnJust = false;
+    int8_t jumpBuffer = 0;
 };
 
 Input handleInput(const GameAppState& appState, Input input)
@@ -48,23 +50,23 @@ Input handleInput(const GameAppState& appState, Input input)
     }
     input.prevX = input.x;
 
-    if (input.jumpBtn == false && appState.isPressedKey[kGameAppKeySpace])
+    input.jumpBtn = appState.isPressedKey[kGameAppKeyUp];
+    if (!input.prevJumpBtn && input.jumpBtn)
     {
-        input.jumpBtnP = true;
+        input.jumpBtnJust = true;
+        input.jumpBuffer = 4;
     }
     else
     {
-        input.jumpBtnP = false;
+        input.jumpBtnJust = false;
+        input.jumpBuffer -= 1;
+        if (input.jumpBuffer < 0)
+        {
+            input.jumpBuffer = 0;
+        }
     }
+    input.prevJumpBtn = input.jumpBtn;
 
-    if (appState.isPressedKey[kGameAppKeySpace])
-    {
-        input.jumpBtn = true;
-    }
-    else
-    {
-        input.jumpBtn = false;
-    }
     return input;
 }
 
@@ -120,7 +122,18 @@ struct Player : Entity {
     void update()
     {
         hsp = input.x * walksp;
-        moveX(hsp, [this](Entity*) {
+
+        moveX(hsp, [this](Entity* e) {
+            if (hsp > 0.0F)
+            {
+                Rect r = e->getHitArea();
+                position.x = r.x - hitbox.x - hitbox.w;
+            }
+            else if (hsp < 0.0F)
+            {
+                Rect r = e->getHitArea();
+                position.x = r.x + r.w - hitbox.x;
+            }
             hsp = 0.0F;
             return true;
         });
@@ -128,13 +141,24 @@ struct Player : Entity {
         vsp = vsp + grv;
 
         bool on_ground = onGround();
-
-        if (on_ground && input.jumpBtnP)
+        if (on_ground && (input.jumpBtnJust || input.jumpBuffer > 0))
         {
-            vsp += 4.0F;
+            printf("%d, %d\n", input.jumpBtnJust, input.jumpBuffer);
+            input.jumpBuffer = 0;
+            vsp = 4.0F;
         }
 
-        moveY(vsp, [this](Entity*) {
+        moveY(vsp, [this](Entity* e) {
+            if (vsp > 0.0F)
+            {
+                Rect r = e->getHitArea();
+                position.y = r.y - hitbox.h;
+            }
+            else if (vsp < 0.0F)
+            {
+                Rect r = e->getHitArea();
+                position.y = r.y + r.h - hitbox.y;
+            }
             vsp = 0.0F;
             currentSpriteSheet = kPlayerSpriteSheetIdle;
             return true;
@@ -155,7 +179,7 @@ struct Player : Entity {
             currentSpriteSheet = kPlayerSpriteSheetIdle;
         }
 
-        if (vsp || !on_ground)
+        if (!floatEqual(vsp, 0.0F) || !on_ground)
         {
             currentSpriteSheet = kPlayerSpriteSheetJump;
         }
@@ -172,7 +196,7 @@ struct Player : Entity {
             {
                 continue;
             }
-            Rect hurtbox = Rect(hitbox.x + position.x, hitbox.y + position.y + -1.0F, hitbox.w, hitbox.h);
+            Rect hurtbox = Rect(hitbox.x + position.x, hitbox.y + position.y - 0.00001F, hitbox.w, hitbox.h);
             if (hurtbox.isHit(e->getHitArea()))
             {
                 return true;
