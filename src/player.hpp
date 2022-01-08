@@ -5,6 +5,7 @@
 #include "sprite_sheet.hpp"
 #include "helper.hpp"
 #include <functional>
+#include <algorithm>
 
 struct Input {
     float x = 0.0F;
@@ -54,16 +55,12 @@ Input handleInput(const GameAppState& appState, Input input)
     if (!input.prevJumpBtn && input.jumpBtn)
     {
         input.jumpBtnJust = true;
-        input.jumpBuffer = 4;
+        input.jumpBuffer = 8;
     }
     else
     {
         input.jumpBtnJust = false;
-        input.jumpBuffer -= 1;
-        if (input.jumpBuffer < 0)
-        {
-            input.jumpBuffer = 0;
-        }
+        input.jumpBuffer = std::max(0, input.jumpBuffer - 1);
     }
     input.prevJumpBtn = input.jumpBtn;
 
@@ -84,6 +81,7 @@ struct Player : Entity {
     float grv = -0.25F;
     float walksp = 1.25F;
     float direction = 1.0F;
+    int8_t coyoteTime = 0;
     Input input;
     PlayerSpriteSheet currentSpriteSheet = kPlayerSpriteSheetIdle;
     Sprite sprites[kNumPlayerSpriteSheet];
@@ -141,10 +139,18 @@ struct Player : Entity {
         vsp = vsp + grv;
 
         bool on_ground = onGround();
-        if (on_ground && (input.jumpBtnJust || input.jumpBuffer > 0))
+        if (on_ground)
         {
-            printf("%d, %d\n", input.jumpBtnJust, input.jumpBuffer);
+            coyoteTime = 8;
+        }
+        else
+        {
+            coyoteTime = std::max(0, coyoteTime - 1);
+        }
+        if (coyoteTime > 0 && (input.jumpBtnJust || input.jumpBuffer > 0))
+        {
             input.jumpBuffer = 0;
+            coyoteTime = 0;
             vsp = 4.0F;
         }
 
