@@ -71,6 +71,7 @@ Input handleInput(const GameAppState& appState, Input input)
 enum PlayerSpriteSheet {
     kPlayerSpriteSheetIdle = 0,
     kPlayerSpriteSheetRun,
+    kPlayerSpriteSheetJump,
     kNumPlayerSpriteSheet
 };
 
@@ -82,7 +83,7 @@ struct Player : Entity {
     float walksp = 1.25F;
     float direction = 1.0F;
     Input input;
-    PlayerSpriteSheet currentSpriteSheet = kPlayerSpriteSheetRun;
+    PlayerSpriteSheet currentSpriteSheet = kPlayerSpriteSheetIdle;
     Sprite sprites[kNumPlayerSpriteSheet];
     SpriteSheet sprSheets[kNumPlayerSpriteSheet];
 
@@ -97,6 +98,11 @@ struct Player : Entity {
         {
             sprites[kPlayerSpriteSheetRun].loadSprite("playerRun.png");
             sprSheets[kPlayerSpriteSheetRun].createSpriteSheet(sprites[kPlayerSpriteSheetRun], 32, 32, 4);
+        }
+        if (!sprites[kPlayerSpriteSheetJump].isLoaded())
+        {
+            sprites[kPlayerSpriteSheetJump].loadSprite("playerJump.png");
+            sprSheets[kPlayerSpriteSheetJump].createSpriteSheet(sprites[kPlayerSpriteSheetJump], 32, 32, 1);
         }
     }
 
@@ -121,13 +127,16 @@ struct Player : Entity {
 
         vsp = vsp + grv;
 
-        if (onGround() && input.jumpBtnP)
+        bool on_ground = onGround();
+
+        if (on_ground && input.jumpBtnP)
         {
             vsp += 4.0F;
         }
 
         moveY(vsp, [this](Entity*) {
             vsp = 0.0F;
+            currentSpriteSheet = kPlayerSpriteSheetIdle;
             return true;
         });
 
@@ -144,6 +153,11 @@ struct Player : Entity {
         {
             sprSheets[currentSpriteSheet].reset();
             currentSpriteSheet = kPlayerSpriteSheetIdle;
+        }
+
+        if (vsp || !on_ground)
+        {
+            currentSpriteSheet = kPlayerSpriteSheetJump;
         }
 
         sprSheets[currentSpriteSheet].update();
