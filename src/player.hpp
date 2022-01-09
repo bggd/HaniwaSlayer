@@ -172,16 +172,17 @@ struct Player : Entity {
 
         if (!floatEqual(input.x, 0.0F))
         {
-            if (!floatEqual(input.prevX, input.x))
-            {
-                sprSheets[currentSpriteSheet].reset();
-            }
-            direction = input.x;
             currentSpriteSheet = kPlayerSpriteSheetRun;
+            float prevDirection = direction;
+            direction = input.x;
+            if (prevDirection != input.x)
+            {
+                sprSheets[kPlayerSpriteSheetRun].reset();
+            }
         }
         else
         {
-            sprSheets[currentSpriteSheet].reset();
+            sprSheets[kPlayerSpriteSheetRun].reset();
             currentSpriteSheet = kPlayerSpriteSheetIdle;
         }
 
