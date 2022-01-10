@@ -69,7 +69,7 @@ struct TileMap {
             {
                 x = float(tx) * tileWidth;
                 uint8_t idx = tileLayer[width * ty + tx];
-                if (idx > 0)
+                if (idx > 1)
                 {
                     Entity e;
                     e.id = Entity::genID();
@@ -102,7 +102,7 @@ struct TileMap {
             {
                 x = float(tx) * tileWidth;
                 uint8_t idx = tileLayer[width * ty + tx];
-                if (idx > 0)
+                if (idx > 1)
                 {
                     tilesets[idx].drawSprite(x - offsetX, (y - offsetY) * -1.0F);
                 }
