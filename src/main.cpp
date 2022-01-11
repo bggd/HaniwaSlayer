@@ -8,8 +8,10 @@
 #include "sprite_sheet.hpp"
 #include "framebuffer.hpp"
 
-#define SCREEN_X 384
-#define SCREEN_Y 216
+#define VSCR_X 384
+#define VSCR_Y 216
+#define SCR_X (VSCR_X * 2)
+#define SCR_Y (VSCR_Y * 2)
 
 Camera gCam;
 Sprite gSpr;
@@ -36,7 +38,7 @@ void initOpenGL()
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glClearColor(0.4F, 0.4F, 0.6F, 1.0F);
 
-    gFBO[0].createFrameBuffer(SCREEN_X, SCREEN_Y);
+    gFBO[0].createFrameBuffer(VSCR_X, VSCR_Y);
     gFBO[1].createFrameBuffer(640, 480);
 }
 
@@ -57,12 +59,12 @@ void onUpdate(const GameAppState& appState)
 {
 
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, gFBO[0].fbo);
-    glViewport(0, 0, SCREEN_X, SCREEN_Y);
+    glViewport(0, 0, VSCR_X, VSCR_Y);
     glClear(GL_COLOR_BUFFER_BIT);
     Camera cam = gCam;
     cam.position.x -= 4.0F;
     cam.position.y += 4.0F;
-    cam.setProjection(mat4CreateOrthographicOffCenter(-SCREEN_X / 2.0F, SCREEN_X / 2.0F, -SCREEN_Y / 2.0F, SCREEN_Y / 2.0F, 0.05F, 100.0F));
+    cam.setProjection(mat4CreateOrthographicOffCenter(-VSCR_X / 2.0F, VSCR_X / 2.0F, -VSCR_Y / 2.0F, VSCR_Y / 2.0F, 0.05F, 100.0F));
     glLoadMatrixf(mat4Ptr(cam.getMVP()));
     float x = float(appState.mouseX) - 320.0F;
     float y = (float(appState.mouseY) - 240.0F) * -1.0F;
@@ -80,7 +82,7 @@ void onUpdate(const GameAppState& appState)
     }
     //drawHitbox(player, 0.0F, 1.0F, 0.0F, 0.5F);
 
-    glViewport(0, 0, 1280, 720);
+    glViewport(0, 0, SCR_X, SCR_Y);
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
     glClear(GL_COLOR_BUFFER_BIT);
     //gCam.setProjection(mat4CreateOrthographicOffCenter(-1.0F, 1.0F, -1.0F, 1.0F, 0.05F, 100.0F));
@@ -123,8 +125,8 @@ int main()
     player.hitbox.h = 9.0F;
 
     GameAppConfig appConfig;
-    appConfig.width = 1280;
-    appConfig.height = 720;
+    appConfig.width = SCR_X;
+    appConfig.height = SCR_Y;
     appConfig.title = "Haniwa Slayer";
     GameApp app = {};
     app.onInit = onInit;
