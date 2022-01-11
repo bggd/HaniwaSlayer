@@ -23,9 +23,10 @@ enum GameAppKey {
 };
 
 struct GameAppConfig {
-    uint32_t width;
-    uint32_t height;
-    const char* title;
+    uint32_t width = 0;
+    uint32_t height = 0;
+    const char* title = nullptr;
+    bool debug_gl = false;
 };
 
 struct GameAppState {
@@ -47,10 +48,16 @@ struct GameApp {
     void (*onUpdate)(const GameAppState&) = [](const GameAppState&) {};
 };
 
+extern void debugGLMessageCallback(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* userParam);
+
 void runGameApp(GameApp app, GameAppConfig appConfig)
 {
     SDL_Init(SDL_INIT_EVERYTHING);
 
+    if (appConfig.debug_gl)
+    {
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+    }
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
     SDL_Window* window = SDL_CreateWindow(appConfig.title, SDL_WINDOWPOS_CENTERED,
@@ -65,6 +72,18 @@ void runGameApp(GameApp app, GameAppConfig appConfig)
     int version = gladLoadGL((GLADloadfunc)SDL_GL_GetProcAddress);
     assert(version != 0);
     printf("OpenGL: %d.%d\n", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
+
+    assert(GLAD_GL_VERSION_2_1);
+    assert(GLAD_GL_EXT_framebuffer_object);
+
+    if (appConfig.debug_gl)
+    {
+        assert(GLAD_GL_KHR_debug);
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        glDebugMessageCallback(debugGLMessageCallback, nullptr);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+    }
 
     app.onInit();
 
@@ -149,4 +168,81 @@ app_quit:
     SDL_DestroyWindow(window);
 
     SDL_Quit();
+}
+
+void debugGLMessageCallback(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* userParam)
+{
+    if (id == 131169 || id == 131185 || id == 131218 || id == 131204)
+    {
+        return;
+    }
+
+    printf("---------------\n");
+    printf("Debug message (%u): %s\n", id, message);
+
+    switch (source)
+    {
+        case GL_DEBUG_SOURCE_API:
+            printf("GL_DEBUG_SOURCE_API");
+            break;
+        case GL_DEBUG_SOURCE_APPLICATION:
+            printf("GL_DEBUG_SOURCE_APPLICATION");
+            break;
+        case GL_DEBUG_SOURCE_OTHER:
+            printf("GL_DEBUG_SOURCE_OTHER");
+            break;
+        case GL_DEBUG_SOURCE_SHADER_COMPILER:
+            printf("GL_DEBUG_SOURCE_SHADER_COMPILER");
+            break;
+        case GL_DEBUG_SOURCE_THIRD_PARTY:
+            printf("GL_DEBUG_SOURCE_THIRD_PARTY");
+            break;
+        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+            printf("GL_DEBUG_SOURCE_WINDOW_SYSTEM");
+            break;
+        default:
+            break;
+    }
+    printf("\n");
+
+    switch (type)
+    {
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+            printf("GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR");
+            break;
+        case GL_DEBUG_TYPE_ERROR:
+            printf("GL_DEBUG_TYPE_ERROR");
+            break;
+        case GL_DEBUG_TYPE_OTHER:
+            printf("GL_DEBUG_TYPE_OTHER");
+            break;
+        case GL_DEBUG_TYPE_PERFORMANCE:
+            printf("GL_DEBUG_TYPE_PERFORMANCE");
+            break;
+        case GL_DEBUG_TYPE_PORTABILITY:
+            printf("GL_DEBUG_TYPE_PORTABILITY");
+            break;
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+            printf("GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR");
+            break;
+        default:
+            break;
+    }
+    printf("\n");
+
+    switch (severity)
+    {
+        case GL_DEBUG_SEVERITY_HIGH:
+            printf("GL_DEBUG_SEVERITY_HIGH");
+            break;
+        case GL_DEBUG_SEVERITY_LOW:
+            printf("GL_DEBUG_SEVERITY_LOW");
+            break;
+        case GL_DEBUG_SEVERITY_MEDIUM:
+            printf("GL_DEBUG_SEVERITY_MEDIUM");
+            break;
+        default:
+            break;
+    }
+    printf("\n\n");
 }

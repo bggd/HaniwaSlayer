@@ -128,6 +128,7 @@ int main()
     appConfig.width = SCR_X;
     appConfig.height = SCR_Y;
     appConfig.title = "Haniwa Slayer";
+    appConfig.debug_gl = true;
     GameApp app = {};
     app.onInit = onInit;
     app.onUpdate = onUpdate;
