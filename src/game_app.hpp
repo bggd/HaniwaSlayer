@@ -52,6 +52,8 @@ extern void debugGLMessageCallback(GLenum source, GLenum type, unsigned int id, 
 
 void runGameApp(GameApp app, GameAppConfig appConfig)
 {
+    SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
+
     SDL_Init(SDL_INIT_EVERYTHING);
 
     if (appConfig.debug_gl)
